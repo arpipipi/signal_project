@@ -7,28 +7,31 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class fileOutputStrategy implements OutputStrategy {
+public class FileOutputStrategy implements OutputStrategy { // Renamed class to UpperCamelCase
+    // Also renamed the filename to match the class name
 
-    private String BaseDirectory;
+    private String baseDirectory; // Renamed variable to LowerCamelCase
 
-    public final ConcurrentHashMap<String, String> file_map = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> fileMap = new ConcurrentHashMap<>();
+    //renamed
 
-    public fileOutputStrategy(String baseDirectory) {
+    public FileOutputStrategy(String baseDirectory) { // Renamed variable baseDirectory to LowerCamelCase
 
-        this.BaseDirectory = baseDirectory;
+        this.baseDirectory = baseDirectory; // Renamed baseDirectory to LowerCamelCase from UpperCamelCase
     }
 
     @Override
     public void output(int patientId, long timestamp, String label, String data) {
         try {
             // Create the directory
-            Files.createDirectories(Paths.get(BaseDirectory));
+            Files.createDirectories(Paths.get(baseDirectory)); // Renamed baseDirectory to LowerCamelCase
         } catch (IOException e) {
             System.err.println("Error creating base directory: " + e.getMessage());
             return;
         }
         // Set the FilePath variable
-        String FilePath = file_map.computeIfAbsent(label, k -> Paths.get(BaseDirectory, label + ".txt").toString());
+        String FilePath = fileMap.computeIfAbsent(label, k -> Paths.get(baseDirectory, label + ".txt").toString());
+        // Renamed variables fileMap and baseDirectory to LowerCamelCase from UpperCamelCase
 
         // Write the data to the file
         try (PrintWriter out = new PrintWriter(
