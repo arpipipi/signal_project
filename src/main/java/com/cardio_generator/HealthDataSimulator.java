@@ -21,6 +21,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+/**
+ * Overview: This class manages the simulation of data for a specified number of patients.
+ * It supports dynamic patient counts and multiple output strategies to accommodate different environments or testing scenarios.
+ *
+ * Usage: This class is executed as a command-line application.
+ * It accepts parameters to specify the number of patients and the output strategy.
+ * Based on the input parameters, it initializes and schedules tasks for each data generator linked to a patient ID.
+ * @author Nisrine and Apandeep
+ */
 public class HealthDataSimulator {
 
     private static int patientCount = 50; // Default number of patients
@@ -28,6 +37,12 @@ public class HealthDataSimulator {
     private static OutputStrategy outputStrategy = new ConsoleOutputStrategy(); // Default output strategy
     private static final Random random = new Random();
 
+    /**
+     * The main entry point for the HealthDataSimulator.
+     * It parses command line arguments, initializes the simulation environment, and starts the simulation tasks.
+     * @param args The command line arguments used to configure the simulation.
+     * @throws IOException If there is an issue reading or writing necessary data, such as output directories.
+     */
     public static void main(String[] args) throws IOException {
 
         parseArguments(args);
@@ -40,6 +55,13 @@ public class HealthDataSimulator {
         scheduleTasksForPatients(patientIds);
     }
 
+    /**
+     * Parses the command-line arguments to set up simulation parameters.
+     * Handles setting the patient count and choosing the output strategy.
+     *
+     * @param args the array of command-line arguments.
+     * @throws IOException if there is a failure in setting up the file output directory.
+     */
     private static void parseArguments(String[] args) throws IOException {
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
@@ -101,6 +123,10 @@ public class HealthDataSimulator {
         }
     }
 
+    /**
+     * Prints usage information for the HealthDataSimulator.
+     * Detailed command line options are displayed.
+     */
     private static void printHelp() {
         System.out.println("Usage: java HealthDataSimulator [options]");
         System.out.println("Options:");
@@ -118,6 +144,12 @@ public class HealthDataSimulator {
                 "  This command simulates data for 100 patients and sends the output to WebSocket clients connected to port 8080.");
     }
 
+    /**
+     * Initializes a list of patient IDs based on the specified count.
+     *
+     * @param patientCount the number of patients for whom data is to be simulated.
+     * @return a list of integer IDs for each patient.
+     */
     private static List<Integer> initializePatientIds(int patientCount) {
         List<Integer> patientIds = new ArrayList<>();
         for (int i = 1; i <= patientCount; i++) {
@@ -126,6 +158,11 @@ public class HealthDataSimulator {
         return patientIds;
     }
 
+    /**
+     * Schedules tasks for each patient to generate and output data at specified intervals.
+     *
+     * @param patientIds the list of patient IDs for which tasks will be scheduled.
+     */
     private static void scheduleTasksForPatients(List<Integer> patientIds) {
         ECGDataGenerator ecgDataGenerator = new ECGDataGenerator(patientCount);
         BloodSaturationDataGenerator bloodSaturationDataGenerator = new BloodSaturationDataGenerator(patientCount);
@@ -142,7 +179,15 @@ public class HealthDataSimulator {
         }
     }
 
+    /**
+     * Schedules a recurring task that runs at a fixed rate.
+     *
+     * @param task the task to execute.
+     * @param period the period between successive executions.
+     * @param timeUnit the time unit of the period.
+     */
     private static void scheduleTask(Runnable task, long period, TimeUnit timeUnit) {
         scheduler.scheduleAtFixedRate(task, random.nextInt(5), period, timeUnit);
     }
+
 }
