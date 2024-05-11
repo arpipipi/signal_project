@@ -1,7 +1,14 @@
 package com.alerts;
 
+import com.cardio_generator.generators.ECGDataGenerator;
 import com.data_management.DataStorage;
 import com.data_management.Patient;
+import com.data_management.PatientRecord;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * The {@code AlertGenerator} class is responsible for monitoring patient data
@@ -11,6 +18,8 @@ import com.data_management.Patient;
  */
 public class AlertGenerator {
     private DataStorage dataStorage;
+    private Map<Integer, ECGDataGenerator> ecgDataGeneratorMap;
+    private static final Logger LOGGER = Logger.getLogger(AlertGenerator.class.getName());
 
     /**
      * Constructs an {@code AlertGenerator} with a specified {@code DataStorage}.
@@ -35,8 +44,49 @@ public class AlertGenerator {
      * @param patient the patient data to evaluate for alert conditions
      */
     public void evaluateData(Patient patient) {
-        // Implementation goes here
+        long currentTime = System.currentTimeMillis(); // Reason is to get the current time and the time 10 minutes ago
+        long tenMinutes = currentTime - (10 * 60 * 1000);
+        List<PatientRecord> saturationRecord = dataStorage.getRecords(patient.getPatientId(), tenMinutes, currentTime); // Get saturation records for the last 10 minutes
+
+        // Reason for checking if the size is less than 3 is to ensure that we have enough data to evaluate
+        if(saturationRecord.size() < 3) { // If data is less than 3, we cannot evaluate it
+            return;
+        }
+
+        PatientRecord latest = saturationRecord.get(saturationRecord.size() - 1); // Get the latest record
+        PatientRecord tenMinutesRecord = saturationRecord.get(saturationRecord.size() - 3); // Get the record from 10 minutes ago
+
+        if (latest.getMeasurementValue() < 92){
+            // If the latest saturation is less than 92, trigger an alert for low saturation
+            triggerAlert(new Alert(Integer.toString(patient.getPatientId()), "Low Saturation Detected", currentTime));
+        } else if (latest.getMeasurementValue() - tenMinutesRecord.getMeasurementValue() >= 5) {
+            // If the saturation has dropped by 5 or more in the last 10 minutes, trigger an alert for rapid drop
+            triggerAlert(new Alert(Integer.toString(patient.getPatientId()), "Rapid Drop in Blood Saturation Alert", currentTime));
+        }
+
+        ECGDataGenerator ecgDataGenerator = this.ecgDataGeneratorMap.get(patient.getPatientId());
+        if (ecgDataGenerator == null) {
+            detectAbnormalRate(patient, ecgDataGenerator);
+        }
     }
+
+    public void detectAbnormalRate(Patient patient, ECGDataGenerator ecgDataGenerator) {
+        long currentTime = System.currentTimeMillis();
+        ArrayList<Double> hbIntervals = ecgDataGenerator.getHeartBeatIntervals(patient.getPatientId());
+        double heartRate = ecgDataGenerator.getLastHeartRate(patient.getPatientId());
+
+        double average = hbIntervals.stream().mapToDouble(val -> val).average().orElse(0.0);
+
+        double sd = Math.sqrt(hbIntervals.stream().mapToDouble(val -> Math.pow(val - average, 2)).average().orElse(0.0));
+
+
+        if (heartRate < 50 || heartRate > 100) {
+            triggerAlert(new Alert(Integer.toString(patient.getPatientId()), "Abnormal Heart Rate Alert", currentTime));
+        } else if (sd > 0.1) {
+            triggerAlert(new Alert(Integer.toString(patient.getPatientId()), "Irregular Heart Rate Alert", currentTime));
+        }
+    }
+
 
     /**
      * Triggers an alert for the monitoring system. This method can be extended to
@@ -47,6 +97,7 @@ public class AlertGenerator {
      * @param alert the alert object containing details about the alert condition
      */
     private void triggerAlert(Alert alert) {
+        LOGGER.info(alert.toString());
         // Implementation might involve logging the alert or notifying staff
     }
 }

@@ -2,6 +2,7 @@ package com.data_management;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a patient and manages their medical records.
@@ -53,5 +54,15 @@ public class Patient {
      */
     public List<PatientRecord> getRecords(long startTime, long endTime) {
         // TODO Implement and test this method
+        // The stream is assisting in looking at each piece of the patient data one-by-one, and then selecting only the data
+        // that falls in between the start adn end time that we desire
+        return patientRecords.stream() // Converts the list of patient records to a stream
+                .filter(record -> record.getTimestamp() >= startTime && record.getTimestamp() <= endTime)
+                .collect(Collectors.toList());
+        // Collects the filtered records into a list and returns it
+    }
+
+    public int getPatientId() {
+        return patientId;
     }
 }
