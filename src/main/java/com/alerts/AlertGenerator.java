@@ -6,9 +6,12 @@ import com.data_management.Patient;
 import com.data_management.PatientRecord;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import static java.util.Comparator.comparing;
 
 /**
  * The {@code AlertGenerator} class is responsible for monitoring patient data
@@ -46,17 +49,18 @@ public class AlertGenerator {
     public void evaluateData(Patient patient) {
         long currentTime = System.currentTimeMillis(); // Reason is to get the current time and the time 10 minutes ago
         long tenMinutes = currentTime - (10 * 60 * 1000);
-        List<PatientRecord> saturationRecord = dataStorage.getRecords(patient.getPatientId(), tenMinutes, currentTime); // Get saturation records for the last 10 minutes
+        List<PatientRecord> saturationRecord = dataStorage.getRecords(patient.getPatientId(), tenMinutes, currentTime);
+        // Get saturation records for the last 10 minutes
 
         // Reason for checking if the size is less than 3 is to ensure that we have enough data to evaluate
-        if(saturationRecord.size() < 3) { // If data is less than 3, we cannot evaluate it
+        if (saturationRecord.size() < 3) { // If data is less than 3, we cannot evaluate it
             return;
         }
 
         PatientRecord latest = saturationRecord.get(saturationRecord.size() - 1); // Get the latest record
         PatientRecord tenMinutesRecord = saturationRecord.get(saturationRecord.size() - 3); // Get the record from 10 minutes ago
 
-        if (latest.getMeasurementValue() < 92){
+        if (latest.getMeasurementValue() < 92) {
             // If the latest saturation is less than 92, trigger an alert for low saturation
             triggerAlert(new Alert(Integer.toString(patient.getPatientId()), "Low Saturation Detected", currentTime));
         } else if (latest.getMeasurementValue() - tenMinutesRecord.getMeasurementValue() >= 5) {
@@ -99,5 +103,28 @@ public class AlertGenerator {
     private void triggerAlert(Alert alert) {
         LOGGER.info(alert.toString());
         // Implementation might involve logging the alert or notifying staff
+    }
+
+    public void trendAlert(List<PatientRecord> trendRecord) {
+        // Sort the records by their timestamp, from lowest to highest
+        trendRecord.sort(Comparator.comparing(PatientRecord::getTimestamp));
+        // Verify that the trend of the records we are looking at is only 
+        for (int i = 2; i < trendRecord.size(); i++) {
+            if ("SystolicPressure".equals(trendRecord.get(i).getRecordType()) || "DiastolicPressure".equals(trendRecord.get(i).getRecordType())) {
+
+                // Calculate the differences between the last 3 readings made
+                double alteration1 = trendRecord.get(i - 2).getMeasurementValue() - trendRecord.get(i - 1).getMeasurementValue();
+                double alteration2 = trendRecord.get(i - 1).getMeasurementValue() - trendRecord.get(i).getMeasurementValue();
+
+                // Check if the alterations are greater than 10 and have the same sign
+                if (Math.abs(alteration1) > 10 && Math.abs(alteration2) > 10 && Math.signum(alteration1) == Math.signum(alteration2)) {
+                    // Generate an alert message for the patient
+                    String alertType = alteration1 > 0 ? "Blood Pressure Increasing Trend Alert" : "Blood Pressure Decreasing Trend Alert";
+
+                    // Triggers an alert for the monitoring system
+                    Alert alert = new Alert(String.valueOf(trendRecord.get(i).getPatientId()), alertType, trendRecord.get(i).getTimestamp());
+                }
+            }
+        }
     }
 }
