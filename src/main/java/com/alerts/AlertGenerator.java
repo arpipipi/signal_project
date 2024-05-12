@@ -1,6 +1,7 @@
 package com.alerts;
 
 import com.cardio_generator.generators.ECGDataGenerator;
+import com.cardio_generator.outputs.OutputStrategy;
 import com.data_management.DataStorage;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
@@ -47,30 +48,34 @@ public class AlertGenerator {
      * @param patient the patient data to evaluate for alert conditions
      */
     public void evaluateData(Patient patient) {
-        long currentTime = System.currentTimeMillis(); // Reason is to get the current time and the time 10 minutes ago
+        long currentTime = System.currentTimeMillis();
         long tenMinutes = currentTime - (10 * 60 * 1000);
         List<PatientRecord> saturationRecord = dataStorage.getRecords(patient.getPatientId(), tenMinutes, currentTime);
-        // Get saturation records for the last 10 minutes
 
-        // Reason for checking if the size is less than 3 is to ensure that we have enough data to evaluate
-        if (saturationRecord.size() < 3) { // If data is less than 3, we cannot evaluate it
-            return;
-        }
-
-        PatientRecord latest = saturationRecord.get(saturationRecord.size() - 1); // Get the latest record
-        PatientRecord tenMinutesRecord = saturationRecord.get(saturationRecord.size() - 3); // Get the record from 10 minutes ago
-
-        if (latest.getMeasurementValue() < 92) {
-            // If the latest saturation is less than 92, trigger an alert for low saturation
-            triggerAlert(new Alert(Integer.toString(patient.getPatientId()), "Low Saturation Detected", currentTime));
-        } else if (latest.getMeasurementValue() - tenMinutesRecord.getMeasurementValue() >= 5) {
-            // If the saturation has dropped by 5 or more in the last 10 minutes, trigger an alert for rapid drop
-            triggerAlert(new Alert(Integer.toString(patient.getPatientId()), "Rapid Drop in Blood Saturation Alert", currentTime));
-        }
+        evaluateSaturationData(patient, saturationRecord);
+        checkHypotensiveHypoxemia(patient);
 
         ECGDataGenerator ecgDataGenerator = this.ecgDataGeneratorMap.get(patient.getPatientId());
         if (ecgDataGenerator == null) {
             detectAbnormalRate(patient, ecgDataGenerator);
+        }
+    }
+
+    private void evaluateSaturationData(Patient patient, List<PatientRecord> saturationRecord) {
+        long currentTime = System.currentTimeMillis();
+
+        // Check if there are at least 3 saturation records to compare
+        if (saturationRecord.size() < 3) {
+            return;
+        }
+
+        PatientRecord latest = saturationRecord.get(saturationRecord.size() - 1);
+        PatientRecord tenMinutesRecord = saturationRecord.get(saturationRecord.size() - 3);
+
+        if (latest.getMeasurementValue() < 92) {
+            triggerAlert(new Alert(Integer.toString(patient.getPatientId()), "Low Saturation Detected", currentTime));
+        } else if (latest.getMeasurementValue() - tenMinutesRecord.getMeasurementValue() >= 5) {
+            triggerAlert(new Alert(Integer.toString(patient.getPatientId()), "Rapid Drop in Blood Saturation Alert", currentTime));
         }
     }
 
@@ -127,4 +132,29 @@ public class AlertGenerator {
             }
         }
     }
+
+    public void triggerManualAlert(int patientId) {
+        long currentTime = System.currentTimeMillis();
+        triggerAlert(new Alert(Integer.toString(patientId), "Alert Button Pressed", currentTime));
+    }
+
+    private void checkHypotensiveHypoxemia(Patient patient) {
+        long currentTime = System.currentTimeMillis();
+        long tenMinutes = currentTime - (10 * 60 * 1000);
+        // Get the patient's systolic pressure and saturation records for the last 10 minutes
+
+        List<PatientRecord> systolicPressureRecord = dataStorage.getRecords(patient.getPatientId(), tenMinutes, currentTime);
+        List<PatientRecord> saturationRecord = dataStorage.getRecords(patient.getPatientId(), tenMinutes, currentTime);
+
+        if (!systolicPressureRecord.isEmpty() && !saturationRecord.isEmpty()) {
+            PatientRecord latestSystolicPressure = systolicPressureRecord.get(systolicPressureRecord.size() - 1);
+            PatientRecord latestSaturation = saturationRecord.get(saturationRecord.size() - 1);
+
+            if (latestSystolicPressure.getMeasurementValue() < 90.0 && latestSaturation.getMeasurementValue() < 92.0) {
+                triggerAlert(new Alert(Integer.toString(patient.getPatientId()), "Hypotensive Hypoxemia Alert", currentTime));
+            }
+        }
+    }
 }
+
+
