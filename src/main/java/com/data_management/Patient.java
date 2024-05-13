@@ -55,7 +55,7 @@ public class Patient {
     public List<PatientRecord> getRecords(long startTime, long endTime) {
         // TODO Implement and test this method
         // The stream is assisting in looking at each piece of the patient data one-by-one, and then selecting only the data
-        // that falls in between the start adn end time that we desire
+        // that falls in between the start and end time that we desire
         return patientRecords.stream() // Converts the list of patient records to a stream
                 .filter(record -> record.getTimestamp() >= startTime && record.getTimestamp() <= endTime)
                 .collect(Collectors.toList());
