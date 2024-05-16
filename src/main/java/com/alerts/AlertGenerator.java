@@ -105,7 +105,7 @@ public class AlertGenerator {
      *
      * @param alert the alert object containing details about the alert condition
      */
-    private void triggerAlert(Alert alert) {
+    public void triggerAlert(Alert alert) {
         LOGGER.info(alert.toString());
         // Implementation might involve logging the alert or notifying staff
     }
@@ -138,7 +138,7 @@ public class AlertGenerator {
         triggerAlert(new Alert(Integer.toString(patientId), "Alert Button Pressed", currentTime));
     }
 
-    private void checkHypotensiveHypoxemia(Patient patient) {
+    public void checkHypotensiveHypoxemia(Patient patient) {
         long currentTime = System.currentTimeMillis();
         long tenMinutes = currentTime - (10 * 60 * 1000);
         // Get the patient's systolic pressure and saturation records for the last 10 minutes

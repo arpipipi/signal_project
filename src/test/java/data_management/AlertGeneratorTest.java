@@ -73,16 +73,12 @@ public class AlertGeneratorTest {
     @Test
     public void testHypotensiveHypoxemiaAlertTrigger() {
         DataStorage dataStorage = mock(DataStorage.class);
-        List<PatientRecord> lowBpRecords = Collections.singletonList(
-                new PatientRecord(1, 85.0, "SystolicPressure", System.currentTimeMillis())
-        );
-        List<PatientRecord> lowSaturationRecords = Collections.singletonList(
-                new PatientRecord(1, 90.0, "Saturation", System.currentTimeMillis())
-        );
+        PatientRecord lowBpRecord = new PatientRecord(1, 85.0, "SystolicPressure", System.currentTimeMillis());
+        PatientRecord lowSaturationRecord = new PatientRecord(1, 90.0, "Saturation", System.currentTimeMillis());
 
-        when(dataStorage.getRecords(1, anyLong(), anyLong()))
-                .thenReturn(lowBpRecords)
-                .thenReturn(lowSaturationRecords);
+        when(dataStorage.getRecords(anyInt(), anyLong(), anyLong()))
+                .thenReturn(Collections.singletonList(lowBpRecord))
+                .thenReturn(Collections.singletonList(lowSaturationRecord));
 
         AlertGenerator alertGenerator = new AlertGenerator(dataStorage);
         alertGenerator.checkHypotensiveHypoxemia(new Patient(1));

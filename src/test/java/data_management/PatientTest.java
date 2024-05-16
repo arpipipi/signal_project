@@ -11,10 +11,10 @@ import com.data_management.Patient;
 import com.data_management.PatientRecord;
 
 public class PatientTest {
-    private Patient patient;
+    private static Patient patient;
 
     @BeforeAll
-    public void setUp() {
+    public static void setUp() {
         patient = new Patient(123); // A Patient with a test ID
     }
 
