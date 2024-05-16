@@ -4,6 +4,7 @@ package data_management;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,10 +12,11 @@ import com.data_management.Patient;
 import com.data_management.PatientRecord;
 
 public class PatientTest {
-    private static Patient patient;
+    private Patient patient;
 
-    @BeforeAll
-    public static void setUp() {
+    @BeforeEach
+    public void setUp() {
+
         patient = new Patient(123); // A Patient with a test ID
     }
 
