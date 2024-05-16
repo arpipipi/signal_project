@@ -56,7 +56,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>com.Main.Main</mainClass>
+                    <mainClass>Main.Main</mainClass>
                 </configuration>
             </plugin>
 
