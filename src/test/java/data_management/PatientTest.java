@@ -4,6 +4,7 @@ package data_management;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,10 +12,11 @@ import com.data_management.Patient;
 import com.data_management.PatientRecord;
 
 public class PatientTest {
-    private static Patient patient;
+    private Patient patient;
 
-    @BeforeAll
-    public static void setUp() {
+    @BeforeEach
+    public void setUp() {
+
         patient = new Patient(123); // A Patient with a test ID
     }
 
@@ -30,7 +32,7 @@ public class PatientTest {
     }
 
     @Test
-    public void tastGetRecordsWithinRange() {
+    public void testGetRecordsWithinRange() {
         patient.addRecord(76, "HeartRate", 1609459200000L); // Jan 1, 2021 00:00:00 GMT
         patient.addRecord(80, "HeartRate", 1609545600000L); // Jan 2, 2021 00:00:00 GMT
         patient.addRecord(78, "HeartRate", 1609632000000L); // Jan 3, 2021 00:00:00 GMT
