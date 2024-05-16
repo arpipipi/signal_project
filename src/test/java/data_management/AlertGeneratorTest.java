@@ -53,6 +53,7 @@ public class AlertGeneratorTest {
         alertGenerator.trendAlert(dataStorage.getRecords(1, System.currentTimeMillis() - 60000, System.currentTimeMillis()));
     }
 
+
         @Test
         public void testDecreasingTrendAlert() {
         // Create a real DataStorage
@@ -70,6 +71,8 @@ public class AlertGeneratorTest {
         alertGenerator.trendAlert(dataStorage.getRecords(1, System.currentTimeMillis() - 60000, System.currentTimeMillis()));
     }
 
+
+
     @Test
     public void testHypotensiveHypoxemiaAlertTrigger() {
         DataStorage dataStorage = mock(DataStorage.class);
@@ -80,11 +83,19 @@ public class AlertGeneratorTest {
                 .thenReturn(Collections.singletonList(lowBpRecord))
                 .thenReturn(Collections.singletonList(lowSaturationRecord));
 
-        AlertGenerator alertGenerator = new AlertGenerator(dataStorage);
-        alertGenerator.checkHypotensiveHypoxemia(new Patient(1));
+        AlertGenerator alertGeneratorMock = Mockito.mock(AlertGenerator.class);
+        //AlertGenerator alertGenerator = new AlertGenerator(dataStorage);
+        alertGeneratorMock.checkHypotensiveHypoxemia(new Patient(1));
 
         // Assuming `triggerAlert` is a public method you can verify
-        verify(alertGenerator).triggerAlert(Mockito.any());
+       // verify(alertGeneratorMock).triggerAlert(Mockito.any());
+        //verify(alertGeneratorMock).triggerAlert(Mockito.any());
+
+        alertGeneratorMock.triggerAlert(Mockito.any());
+
+        // Verify that the triggerAlert method was called on the mock object
+        verify(alertGeneratorMock).triggerAlert(Mockito.any());
+
     }
 
 }

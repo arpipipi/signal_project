@@ -30,7 +30,7 @@ public class PatientTest {
     }
 
     @Test
-    public void tastGetRecordsWithinRange() {
+    public void testGetRecordsWithinRange() {
         patient.addRecord(76, "HeartRate", 1609459200000L); // Jan 1, 2021 00:00:00 GMT
         patient.addRecord(80, "HeartRate", 1609545600000L); // Jan 2, 2021 00:00:00 GMT
         patient.addRecord(78, "HeartRate", 1609632000000L); // Jan 3, 2021 00:00:00 GMT
