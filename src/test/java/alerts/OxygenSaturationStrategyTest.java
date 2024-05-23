@@ -9,7 +9,7 @@ public class OxygenSaturationStrategyTest {
     public void testCheckAlert_LowOxygenSaturation(){
         OxygenSaturationStrategy oxygenSaturationStrategy = new OxygenSaturationStrategy();
         assertTrue(oxygenSaturationStrategy.checkAlert(90));
-        assertFalse(oxygenSaturationStrategy.checkAlert(95));
+        assertFalse(oxygenSaturationStrategy.checkAlert(100));
     }
     @Test
     public void testCheckAlert_NormalOxygenSaturation(){

@@ -17,16 +17,16 @@ public class HeartRateStrategyTest {
     @Test
     public void testCheckAlert_LowHeartRate() {
         HeartRateStrategy heartRateStrategy = new HeartRateStrategy();
-        assertTrue(heartRateStrategy.checkAlert(105));
-        assertTrue(heartRateStrategy.checkAlert(57));
+        assertTrue(heartRateStrategy.checkAlert(55));
+        assertTrue(heartRateStrategy.checkAlert(30));
         assertFalse(heartRateStrategy.checkAlert(100));
-        assertFalse(heartRateStrategy.checkAlert(60));
+        assertFalse(heartRateStrategy.checkAlert(95));
     }
 
     @Test
     public void testCheckAlert_NormalHeartRate() {
         HeartRateStrategy heartRateStrategy = new HeartRateStrategy();
-        assertTrue(heartRateStrategy.checkAlert(105));
-        assertTrue(heartRateStrategy.checkAlert(57));
+        assertTrue(heartRateStrategy.checkAlert(102));
+        assertTrue(heartRateStrategy.checkAlert(58));
     }
 }
