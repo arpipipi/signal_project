@@ -20,13 +20,24 @@ public class WebSocketDataReader extends WebSocketClient implements DataReader {
 
     @Override
     public void onMessage(String message) {
-        String[] dataElements = message.split(",");
-        int patientId = Integer.parseInt(dataElements[0].trim());
-        long time = Long.parseLong(dataElements[1].trim());
-        String label = dataElements[2].trim();
-        double data = Double.parseDouble(dataElements[3].trim());
+        try {
+            String[] dataElements = message.split(",");
+            if (dataElements.length != 4) {
+                throw new IllegalArgumentException("Invalid Format of Message");
+            }
+            int patientId = Integer.parseInt(dataElements[0].trim());
+            long time = Long.parseLong(dataElements[1].trim());
+            String label = dataElements[2].trim();
+            double data = Double.parseDouble(dataElements[3].trim());
 
-        dataStorage.addPatientData(patientId, data, label, time);
+            dataStorage.addPatientData(patientId, data, label, time);
+        } catch (NumberFormatException e) {
+            System.err.println("Error when trying to parse the format" + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("Format of Message is Invalid" + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("There was an error when trying to process this message" + e.getMessage());
+        }
     }
 
 
