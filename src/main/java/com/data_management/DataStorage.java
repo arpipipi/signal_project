@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.alerts.AlertGenerator;
 
 /**
@@ -13,14 +15,29 @@ import com.alerts.AlertGenerator;
  * patient IDs.
  */
 public class DataStorage {
-    private Map<Integer, Patient> patientMap; // Stores patient objects indexed by their unique patient ID.
+    private Map<Integer, Patient> patientMap;
+    // Stores patient objects indexed by their unique patient ID
+    private ConcurrentHashMap<Integer, List<PatientRecord>> patientsRecords;
+    // Stores patient records indexed by patient ID
 
     /**
      * Constructs a new instance of DataStorage, initializing the underlying storage
      * structure.
      */
     public DataStorage() {
+
         this.patientMap = new HashMap<>();
+        patientsRecords = new ConcurrentHashMap<>();
+    }
+
+    public void updatathePatientRecords(PatientRecord record) {
+        patientsRecords.compute(record.getPatientId(), (key, value) -> { // Updates the patient records
+            if (value == null) { // If the patient does not exist, a new list is created
+                value = new ArrayList<>(); // A new list is created
+            }
+            value.add(record); // Patient record is added to the list
+            return value; // Returns the updated list
+        });
     }
 
     /**
@@ -37,12 +54,16 @@ public class DataStorage {
      *                         milliseconds since the Unix epoch
      */
     public void addPatientData(int patientId, double measurementValue, String recordType, long timestamp) {
-        Patient patient = patientMap.get(patientId);
-        if (patient == null) {
+        Patient patient = patientMap.get(patientId); // Verify if the patient already exists
+        if (patient == null) { // If the patient does not in fact exist, a new patient object is created
             patient = new Patient(patientId);
-            patientMap.put(patientId, patient);
+            patientMap.put(patientId, patient); // This new patient object is then added to the patientMap
         }
-        patient.addRecord(measurementValue, recordType, timestamp);
+        patient.addRecord(measurementValue, recordType, timestamp); // New data is added to the patient's records
+    }
+
+    public List<PatientRecord> getPatientsRecords(int patientId) {
+        return patientsRecords.get(patientId); // Returns the records for a specific patient
     }
 
     /**
@@ -59,9 +80,9 @@ public class DataStorage {
      *         range
      */
     public List<PatientRecord> getRecords(int patientId, long startTime, long endTime) {
-        Patient patient = patientMap.get(patientId);
-        if (patient != null) {
-            return patient.getRecords(startTime, endTime);
+        Patient patient = patientMap.get(patientId); // Retrieve the patient object from the patientMap
+        if (patient != null) { // If the patient exists, return the records for the specified time range
+            return patient.getRecords(startTime, endTime); // Returns the records for the specified time range
         }
         return new ArrayList<>(); // return an empty list if no patient is found
     }

@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-
+import java.net.URI;
 
 public class FileDataReader implements DataReader {
     // Provided implementation for the interface DataReader
@@ -60,5 +60,16 @@ public FileDataReader(String directory) {
                 }
             }
         }
+    }
+
+    @Override
+    public void connect(URI serverUri) {
+        // This method doesn't need to do anything for FileDataReader since it is not a WebSocket connection and files are read locally
+    }
+
+    @Override
+    public void onMessage(String message) {
+    // This method doesn't need to do anything for FileDataReader
+
     }
 }
