@@ -1,7 +1,9 @@
 package com.data_management;
 
+import com.data_management.PatientRecord;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,9 +40,10 @@ public class thisWebSocketClient extends WebSocketClient{
         String[] dataElements = message.split(","); // Splits up the message into its individual components
         if (dataElements.length != 4) { // If the message does not have 4 elements
             System.out.println("Format of the Message is Invalid " + message); // Prints that the message is not in the correct format
-        }
+         return;
+    }
         try { // Tries to parse the message into its individual components
-            int patiendId = Integer.parseInt(dataElements[0].trim()); // Parses the patient ID
+            int patientId = Integer.parseInt(dataElements[0].trim()); // Parses the patient ID
             long time = Long.parseLong(dataElements[1].trim()); // Parses the time
             String label = dataElements[2].trim(); // Parses the label
             double data = Double.parseDouble(dataElements[3].trim()); // Parses the data
@@ -59,6 +62,7 @@ public class thisWebSocketClient extends WebSocketClient{
     public void onError(Exception ex) { // An error has occurred
         System.err.println("The following error has occurred: " + ex.getMessage()); // Error message is printed
     }
+
 
     public static void main(String[] args) throws URISyntaxException {
             WebSocketClient client = new thisWebSocketClient(new URI("ws://localhost:8080"));

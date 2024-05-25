@@ -30,7 +30,7 @@ public class DataStorage {
         patientsRecords = new ConcurrentHashMap<>();
     }
 
-    public void updatathePatientRecords(PatientRecord record) {
+    public void updatethePatientRecords(PatientRecord record) {
         patientsRecords.compute(record.getPatientId(), (key, value) -> { // Updates the patient records
             if (value == null) { // If the patient does not exist, a new list is created
                 value = new ArrayList<>(); // A new list is created
@@ -128,5 +128,8 @@ public class DataStorage {
         for (Patient patient : storage.getAllPatients()) {
             alertGenerator.evaluateData(patient);
         }
+    }
+
+    public void store(String s) {
     }
 }
