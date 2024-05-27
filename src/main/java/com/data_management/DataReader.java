@@ -12,7 +12,18 @@ public interface DataReader {
      */
     void readData(DataStorage dataStorage) throws IOException;
 
+    /**
+     * Connects to the specified URI to start reading data.
+     *
+     * @param serverUri the URI of the server to connect to
+     * @throws IOException if there is an error connecting to the server
+     */
     void connect(URI serverUri) throws IOException;
 
+    /**
+     * Handles incoming messages.
+     *
+     * @param message the message received
+     */
     void onMessage(String message);
 }
