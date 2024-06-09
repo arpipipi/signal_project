@@ -10,11 +10,12 @@ public class PriorityAlertDecorator extends AlertDecorator {
 
     @Override
     public void sendAlert() {
-        System.out.println("Priority Level: " + priorityLevel + " Alert: " + getCondition() + " for Patient ID: " + getPatientId() + " at " + getTimestamp());
+        System.out.println("Priority Level: " + priorityLevel + " Alert: " + decoratedAlert.getCondition() + " for Patient ID: " + getPatientId() + " at " + getTimestamp());
+        decoratedAlert.sendAlert();
     }
 
     @Override
     public String getCondition() {
-        return "Priority Level " + priorityLevel + ": " + super.getCondition();
+        return "Priority Level " + priorityLevel + ": " + decoratedAlert.getCondition();
     }
 }

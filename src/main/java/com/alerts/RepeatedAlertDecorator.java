@@ -17,6 +17,7 @@ public class RepeatedAlertDecorator extends AlertDecorator {
     public void sendAlert() {
         for (int i = 0; i < repeatCount; i++) {
             logger.info("Repeated Alert: " + getCondition() + " for Patient ID: " + getPatientId() + " at " + getTimestamp());
+            decoratedAlert.sendAlert();
             try {
                 Thread.sleep(interval);
             } catch (InterruptedException e) {
