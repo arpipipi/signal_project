@@ -1,8 +1,9 @@
-package com.alerts;
+package alerts;
 
+import com.alerts.Alert;
+import com.alerts.RepeatedAlertDecorator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.util.logging.Logger;
 
 import static org.mockito.Mockito.*;
 

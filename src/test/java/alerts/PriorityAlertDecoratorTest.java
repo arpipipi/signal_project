@@ -1,5 +1,7 @@
-package com.alerts;
+package alerts;
 
+import com.alerts.Alert;
+import com.alerts.PriorityAlertDecorator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
