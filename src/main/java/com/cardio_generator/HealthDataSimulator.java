@@ -24,7 +24,7 @@ import java.util.ArrayList;
 /**
  * Overview: This class manages the simulation of data for a specified number of patients.
  * It supports dynamic patient counts and multiple output strategies to accommodate different environments or testing scenarios.
- *
+ * <p>
  * Usage: This class is executed as a command-line application.
  * It accepts parameters to specify the number of patients and the output strategy.
  * Based on the input parameters, it initializes and schedules tasks for each data generator linked to a patient ID.
