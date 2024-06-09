@@ -31,11 +31,22 @@ import java.util.ArrayList;
  * @author Nisrine and Apandeep
  */
 public class HealthDataSimulator {
-
+    private static HealthDataSimulator instance;
     private static int patientCount = 50; // Default number of patients
     private static ScheduledExecutorService scheduler;
     private static OutputStrategy outputStrategy = new ConsoleOutputStrategy(); // Default output strategy
     private static final Random random = new Random();
+
+    // Private constructor to prevent instantiation
+    private HealthDataSimulator() {}
+
+    // Public method to provide access to the singleton instance
+    public static synchronized HealthDataSimulator getInstance() {
+        if (instance == null) {
+            instance = new HealthDataSimulator();
+        }
+        return instance;
+    }
 
     /**
      * The main entry point for the HealthDataSimulator.

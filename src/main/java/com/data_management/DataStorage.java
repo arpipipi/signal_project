@@ -15,6 +15,7 @@ import com.alerts.AlertGenerator;
  * patient IDs.
  */
 public class DataStorage {
+    private static DataStorage instance;
     private Map<Integer, Patient> patientMap;
     // Stores patient objects indexed by their unique patient ID
     private ConcurrentHashMap<Integer, List<PatientRecord>> patientsRecords;
@@ -30,6 +31,14 @@ public class DataStorage {
         patientsRecords = new ConcurrentHashMap<>();
     }
 
+    // Public method to provide access to the singleton instance
+    public static synchronized DataStorage getInstance() {
+        if (instance == null) {
+            instance = new DataStorage();
+        }
+        return instance;
+    }
+
     public void updatethePatientRecords(PatientRecord record) {
         patientsRecords.compute(record.getPatientId(), (key, value) -> { // Updates the patient records
             if (value == null) { // If the patient does not exist, a new list is created
@@ -41,7 +50,7 @@ public class DataStorage {
     }
 
     /**
-     * Adds or updates patient data in the storage.
+     * Adds/updates patient data in the storage.
      * If the patient does not exist, a new Patient object is created and added to
      * the storage.
      * Otherwise, the new data is added to the existing patient's records.
@@ -100,7 +109,7 @@ public class DataStorage {
      * The main method for the DataStorage class.
      * Initializes the system, reads data into storage, and continuously monitors
      * and evaluates patient data.
-     * 
+     *
      * @param args command line arguments
      */
     public static void main(String[] args) {
